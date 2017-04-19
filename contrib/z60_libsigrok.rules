@@ -34,6 +34,8 @@ ATTRS{idVendor}=="0957", ATTRS{idProduct}=="0618", MODE="660", GROUP="plugdev", 
 ATTRS{idVendor}=="0957", ATTRS{idProduct}=="0607", MODE="660", GROUP="plugdev", TAG+="uaccess"
 # DSO1000 series
 ATTRS{idVendor}=="0957", ATTRS{idProduct}=="0588", MODE="660", GROUP="plugdev", TAG+="uaccess"
+# MSO7000A series
+ATTRS{idVendor}=="0957", ATTRS{idProduct}=="1735", MODE="660", GROUP="plugdev", TAG+="uaccess"
 
 # ASIX SIGMA
 # ASIX SIGMA2

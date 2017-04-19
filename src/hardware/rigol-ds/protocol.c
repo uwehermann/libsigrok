@@ -866,10 +866,12 @@ SR_PRIV int rigol_ds_get_dev_cfg(const struct sr_dev_inst *sdi)
 		return SR_ERR;
 	sr_dbg("Current trigger source %s", devc->trigger_source);
 
+#if 0
 	/* Horizontal trigger position. */
 	if (sr_scpi_get_float(sdi->conn, ":TIM:OFFS?", &devc->horiz_triggerpos) != SR_OK)
 		return SR_ERR;
 	sr_dbg("Current horizontal trigger position %g", devc->horiz_triggerpos);
+#endif
 
 	/* Trigger slope. */
 	if (sr_scpi_get_string(sdi->conn, ":TRIG:EDGE:SLOP?", &devc->trigger_slope) != SR_OK)

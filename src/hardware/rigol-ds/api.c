@@ -197,6 +197,7 @@ enum series {
 	DS2000A,
 	DSO1000,
 	DS1000Z,
+	MSO7000A,
 };
 
 /* short name, full name */
@@ -221,6 +222,8 @@ static const struct rigol_ds_series supported_series[] = {
 		{50, 1}, {2, 1000}, 12, 600, 20480},
 	[DS1000Z] = {VENDOR(RIGOL), "DS1000Z", PROTOCOL_V4, FORMAT_IEEE488_2,
 		{50, 1}, {1, 1000}, 12, 1200, 12000000},
+	[MSO7000A] = {VENDOR(AGILENT), "MSO7000A", PROTOCOL_V4, FORMAT_IEEE488_2,
+		{50, 1}, {2, 1000}, 10, 1000 /* TODO */, 10000000 /* TODO */},
 };
 
 #define SERIES(x) &supported_series[x]
@@ -271,6 +274,7 @@ static const struct rigol_ds_model supported_models[] = {
 	{SERIES(DS1000Z), "MSO1104Z", {5, 1000000000}, 4, true},
 	{SERIES(DS1000Z), "MSO1074Z-S", {5, 1000000000}, 4, true},
 	{SERIES(DS1000Z), "MSO1104Z-S", {5, 1000000000}, 4, true},
+	{SERIES(MSO7000A), "MSO7034A", {2, 1000000000}, 4, false /* TODO: true */},
 };
 
 static struct sr_dev_driver rigol_ds_driver_info;
@@ -708,7 +712,9 @@ static int config_set(uint32_t key, GVariant *data, const struct sr_dev_inst *sd
 		 * need to express this in seconds. */
 		t_dbl = -(devc->horiz_triggerpos - 0.5) * devc->timebase * devc->num_timebases;
 		g_ascii_formatd(buffer, sizeof(buffer), "%.6f", t_dbl);
+#if 0
 		ret = rigol_ds_config_set(sdi, ":TIM:OFFS %s", buffer);
+#endif
 		break;
 	case SR_CONF_TRIGGER_LEVEL:
 		t_dbl = g_variant_get_double(data);
@@ -1032,21 +1038,25 @@ static int dev_acquisition_start(const struct sr_dev_inst *sdi)
 				some_digital = TRUE;
 				/* Turn on LA module if currently off. */
 				if (!devc->la_enabled) {
+#if 0
 					if (rigol_ds_config_set(sdi,
 							devc->model->series->protocol >= PROTOCOL_V3 ?
 								":LA:STAT ON" : ":LA:DISP ON") != SR_OK)
 						return SR_ERR;
 					devc->la_enabled = TRUE;
+#endif
 				}
 			}
 			if (ch->enabled != devc->digital_channels[ch->index]) {
 				/* Enabled channel is currently disabled, or vice versa. */
+#if 0
 				if (rigol_ds_config_set(sdi,
 						devc->model->series->protocol >= PROTOCOL_V3 ?
 							":LA:DIG%d:DISP %s" : ":DIG%d:TURN %s", ch->index,
 						ch->enabled ? "ON" : "OFF") != SR_OK)
 					return SR_ERR;
 				devc->digital_channels[ch->index] = ch->enabled;
+#endif
 			}
 		}
 	}
@@ -1055,11 +1065,13 @@ static int dev_acquisition_start(const struct sr_dev_inst *sdi)
 		return SR_ERR;
 
 	/* Turn off LA module if on and no digital channels selected. */
+#if 0
 	if (devc->la_enabled && !some_digital)
 		if (rigol_ds_config_set(sdi,
 				devc->model->series->protocol >= PROTOCOL_V3 ?
 					":LA:STAT OFF" : ":LA:DISP OFF") != SR_OK)
 			return SR_ERR;
+#endif
 
 	/* Set memory mode. */
 	if (devc->data_source == DATA_SOURCE_SEGMENTED) {
