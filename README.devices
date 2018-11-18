@@ -94,7 +94,7 @@ The following drivers/devices do not need any firmware upload:
  - ftdi-la
  - gmc-mh-1x-2x (including all subdrivers)
  - gwinstek-gds-800
- - hameg-hmo
+ - rohde-schwarz-hameg
  - hp-3457a
  - hung-chang-dso-2100
  - ikalogic-scanalogic2
@@ -185,7 +185,7 @@ can auto-detect USB connected devices.
  - conrad-digi-35-cpu
  - fluke-dmm
  - gmc-mh-1x-2x (including all subdrivers)
- - hameg-hmo
+ - rohde-schwarz-hameg
  - link-mso19
  - mic-985xx (including all subdrivers)
  - norma-dmm
@@ -229,7 +229,7 @@ or VXI communication parameters. See these examples:
 
 The following drivers/devices accept network communication parameters:
 
- - hameg-hmo
+ - rohde-schwarz-hameg
  - rigol-ds
  - scpi-dmm
  - siglent-sds

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSIGROK_HARDWARE_HAMEG_HMO_PROTOCOL_H
-#define LIBSIGROK_HARDWARE_HAMEG_HMO_PROTOCOL_H
+#ifndef LIBSIGROK_HARDWARE_ROHDE_SCHWARZ_PROTOCOL_H
+#define LIBSIGROK_HARDWARE_ROHDE_SCHWARZ_PROTOCOL_H
 
 #include <glib.h>
 #include <stdint.h>
@@ -27,7 +27,7 @@
 #include <libsigrok/libsigrok.h>
 #include "libsigrok-internal.h"
 
-#define LOG_PREFIX "hameg-hmo"
+#define LOG_PREFIX "rohde-schwarz-hameg"
 
 #define DIGITAL_CHANNELS_PER_POD	8
 #define DIGITAL_CHANNELS_PER_NIBBLE	4
@@ -243,13 +243,13 @@ struct dev_context {
 	GByteArray *logic_data;
 };
 
-SR_PRIV int hmo_init_device(struct sr_dev_inst *sdi);
-SR_PRIV int hmo_request_data(const struct sr_dev_inst *sdi);
-SR_PRIV int hmo_receive_data(int fd, int revents, void *cb_data);
+SR_PRIV int rs_init_device(struct sr_dev_inst *sdi);
+SR_PRIV int rs_request_data(const struct sr_dev_inst *sdi);
+SR_PRIV int rs_receive_data(int fd, int revents, void *cb_data);
 
-SR_PRIV struct scope_state *hmo_scope_state_new(struct scope_config *config);
-SR_PRIV void hmo_scope_state_free(struct scope_state *state);
-SR_PRIV int hmo_scope_state_get(const struct sr_dev_inst *sdi);
-SR_PRIV int hmo_update_sample_rate(const struct sr_dev_inst *sdi);
+SR_PRIV struct scope_state *rs_scope_state_new(struct scope_config *config);
+SR_PRIV void rs_scope_state_free(struct scope_state *state);
+SR_PRIV int rs_scope_state_get(const struct sr_dev_inst *sdi);
+SR_PRIV int rs_update_sample_rate(const struct sr_dev_inst *sdi);
 
 #endif
