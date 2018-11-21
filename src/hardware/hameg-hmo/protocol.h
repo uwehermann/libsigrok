@@ -84,9 +84,9 @@ struct scope_config {
 };
 
 struct analog_channel_state {
-	int coupling;
+	unsigned int coupling;
 
-	int vscale;
+	unsigned int vscale;
 	float vertical_offset;
 
 	gboolean state;
@@ -96,7 +96,7 @@ struct analog_channel_state {
 struct digital_pod_state {
 	gboolean state;
 
-	int threshold;
+	unsigned int threshold;
 	float user_threshold;
 };
 
@@ -108,12 +108,12 @@ struct scope_state {
 	int timebase;
 
 	uint64_t sample_rate;
-	int waveform_sample_rate;
+	unsigned int waveform_sample_rate;
 
 	float horiz_triggerpos;
 
-	int trigger_source;
-	int trigger_slope;
+	unsigned int trigger_source;
+	unsigned int trigger_slope;
 	char trigger_pattern[MAX_ANALOG_CHANNEL_COUNT + MAX_DIGITAL_CHANNEL_COUNT + 1];
 
 	gboolean high_resolution;
