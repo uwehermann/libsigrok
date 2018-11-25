@@ -138,7 +138,7 @@ static int dev_close(struct sr_dev_inst *sdi)
 	return sr_scpi_close(sdi->conn);
 }
 
-static int check_channel_group(struct dev_context *devc,
+static int check_channel_group(const struct dev_context *devc,
 			     const struct sr_channel_group *cg)
 {
 	const struct scope_config *model;
@@ -166,9 +166,9 @@ static int config_get(uint32_t key, GVariant **data,
 	const struct sr_dev_inst *sdi, const struct sr_channel_group *cg)
 {
 	int cg_type, idx, i;
-	struct dev_context *devc;
+	const struct dev_context *devc;
 	const struct scope_config *model;
-	struct scope_state *state;
+	const struct scope_state *state;
 
 	if (!sdi)
 		return SR_ERR_ARG;
@@ -754,7 +754,7 @@ static int config_list(uint32_t key, GVariant **data,
 	const struct sr_dev_inst *sdi, const struct sr_channel_group *cg)
 {
 	int cg_type = CG_NONE;
-	struct dev_context *devc = NULL;
+	const struct dev_context *devc = NULL;
 	const struct scope_config *model = NULL;
 
 	if (sdi) {
@@ -874,7 +874,7 @@ SR_PRIV int hmo_request_data(const struct sr_dev_inst *sdi)
 	char command[MAX_COMMAND_SIZE];
 	char fftexpr[MAX_COMMAND_SIZE];
 	struct sr_channel *ch;
-	struct dev_context *devc;
+	const struct dev_context *devc;
 	const struct scope_config *model;
 
 	if (!sdi)
@@ -995,10 +995,10 @@ static int hmo_setup_channels(const struct sr_dev_inst *sdi)
 	unsigned int i;
 	gboolean *pod_enabled, setup_changed;
 	char command[MAX_COMMAND_SIZE];
-	struct scope_state *state;
+	const struct scope_state *state;
 	const struct scope_config *model;
 	struct sr_channel *ch;
-	struct dev_context *devc;
+	const struct dev_context *devc;
 	struct sr_scpi_dev_inst *scpi;
 	int ret;
 

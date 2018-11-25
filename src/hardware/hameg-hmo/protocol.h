@@ -214,7 +214,7 @@ SR_PRIV int hmo_receive_data(int fd, int revents, void *cb_data);
 
 SR_PRIV struct scope_state *hmo_scope_state_new(struct scope_config *config);
 SR_PRIV void hmo_scope_state_free(struct scope_state *state);
-SR_PRIV int hmo_scope_state_get(struct sr_dev_inst *sdi);
+SR_PRIV int hmo_scope_state_get(const struct sr_dev_inst *sdi);
 SR_PRIV int hmo_update_sample_rate(const struct sr_dev_inst *sdi);
 
 #endif
