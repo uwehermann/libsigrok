@@ -1542,9 +1542,12 @@ SR_PRIV int hmo_scope_state_get(struct sr_dev_inst *sdi)
 
 static struct scope_state *scope_state_new(const struct scope_config *config)
 {
-	struct scope_state *state;
+	struct scope_state *state = NULL;
 
 	state = g_malloc0(sizeof(struct scope_state));
+	if (!state)
+		return state;
+
 	state->analog_channels = g_malloc0_n(config->analog_channels,
 			sizeof(struct analog_channel_state));
 	state->digital_channels = g_malloc0_n(
@@ -1552,11 +1555,19 @@ static struct scope_state *scope_state_new(const struct scope_config *config)
 	state->digital_pods = g_malloc0_n(config->digital_pods,
 			sizeof(struct digital_pod_state));
 
+	if (!state->analog_channels || !state->digital_channels || !state->digital_pods) {
+		rs_scope_state_free(state);
+		return NULL;
+	}
+
 	return state;
 }
 
 SR_PRIV void hmo_scope_state_free(struct scope_state *state)
 {
+	if (!state)
+		return;
+
 	g_free(state->analog_channels);
 	g_free(state->digital_channels);
 	g_free(state->digital_pods);
@@ -1572,7 +1583,13 @@ SR_PRIV int hmo_init_device(struct sr_dev_inst *sdi)
 	char *tmp_str;
 	int ret;
 
+	if (!sdi)
+		return SR_ERR;
+
 	devc = sdi->priv;
+	if (!devc)
+		return SR_ERR;
+
 	model_index = -1;
 
 	/* Find the exact model. */
@@ -1671,6 +1688,9 @@ SR_PRIV void hmo_queue_logic_data(struct dev_context *devc,
 	uint8_t *logic_data;
 	size_t idx, logic_step;
 
+	if (!devc || !pod_data)
+		return;
+
 	/*
 	 * Upon first invocation, allocate the array which can hold the
 	 * combined logic data for all channels. Assume that each channel
@@ -1720,6 +1740,9 @@ SR_PRIV void hmo_send_logic_packet(struct sr_dev_inst *sdi,
 	struct sr_datafeed_packet packet;
 	struct sr_datafeed_logic logic;
 
+	if (!sdi || !devc)
+		return;
+
 	if (!devc->logic_data)
 		return;
 
@@ -1736,11 +1759,14 @@ SR_PRIV void hmo_send_logic_packet(struct sr_dev_inst *sdi,
 /* Undo previous resource allocation. */
 SR_PRIV void hmo_cleanup_logic_data(struct dev_context *devc)
 {
+	if (!devc)
+		return;
 
 	if (devc->logic_data) {
 		g_byte_array_free(devc->logic_data, TRUE);
 		devc->logic_data = NULL;
 	}
+
 	/*
 	 * Keep 'pod_count'! It's required when more frames will be
 	 * received, and does not harm when kept after acquisition.
@@ -1831,12 +1857,14 @@ SR_PRIV int hmo_receive_data(int fd, int revents, void *cb_data)
 		encoding.offset.p = 0;
 		encoding.offset.q = 1;
 		if (ch->type == SR_CHANNEL_ANALOG) {
-			if (state->analog_channels[ch->index].probe_unit == 'V') {
-				meaning.mq = SR_MQ_VOLTAGE;
-				meaning.unit = SR_UNIT_VOLT;
-			} else {
-				meaning.mq = SR_MQ_CURRENT;
-				meaning.unit = SR_UNIT_AMPERE;
+			if (state) {
+				if (state->analog_channels[ch->index].probe_unit == 'V') {
+					meaning.mq = SR_MQ_VOLTAGE;
+					meaning.unit = SR_UNIT_VOLT;
+				} else {
+					meaning.mq = SR_MQ_CURRENT;
+					meaning.unit = SR_UNIT_AMPERE;
+				}
 			}
 		} else if (ch->type == SR_CHANNEL_FFT) {
 			meaning.mq = SR_MQ_POWER;
