@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "scpi.h"
 #include "protocol.h"
 
@@ -1082,7 +1083,7 @@ static int hmo_setup_channels(const struct sr_dev_inst *sdi)
 {
 	GSList *l;
 	unsigned int i, j;
-	gboolean *pod_enabled, setup_changed;
+	gboolean *pod_enabled, setup_changed, fft_enabled = FALSE;
 	char command[MAX_COMMAND_SIZE];
 	const struct scope_state *state;
 	const struct scope_config *model;
@@ -1117,6 +1118,12 @@ static int hmo_setup_channels(const struct sr_dev_inst *sdi)
 	for (l = sdi->channels; l; l = l->next) {
 		ch = l->data;
 		switch (ch->type) {
+		case SR_CHANNEL_FFT:
+			if (ch->enabled)
+				fft_enabled = TRUE;
+			else
+				break; /* Do not deactivate the corresponding analog channel ! */
+			/* fall through */
 		case SR_CHANNEL_ANALOG:
 			if (ch->enabled == state->analog_channels[ch->index].state)
 				break;
@@ -1153,13 +1160,14 @@ static int hmo_setup_channels(const struct sr_dev_inst *sdi)
 			state->digital_channels[ch->index] = ch->enabled;
 			setup_changed = TRUE;
 			break;
-		case SR_CHANNEL_FFT:
-			break;
 		default:
 			g_free(pod_enabled);
 			return SR_ERR;
 		}
 	}
+
+	if (fft_enabled)
+		sleep(1);
 
 	ret = SR_OK;
 	for (i = 0; i < model->digital_pods; i++) {
