@@ -201,6 +201,8 @@ static struct sr_key_info sr_key_info_config[] = {
 		"Logic threshold (predefined)", NULL},
 	{SR_CONF_LOGIC_THRESHOLD_CUSTOM, SR_T_FLOAT, "logic_threshold_custom",
 		"Logic threshold (custom)", NULL},
+	{SR_CONF_ANALOG_THRESHOLD_CUSTOM, SR_T_FLOAT, "analog_threshold_custom",
+		"Logic threshold for analog channels (custom)", NULL},
 
 	/* Fast Fourier Transform (FFT) options */
 	{SR_CONF_FFT_WINDOW, SR_T_STRING, "fft_window",

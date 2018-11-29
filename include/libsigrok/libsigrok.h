@@ -1027,6 +1027,9 @@ enum sr_configkey {
 	/** Logic threshold: custom numerical value. */
 	SR_CONF_LOGIC_THRESHOLD_CUSTOM,
 
+	/** Logic threshold for analog channels: custom numerical value. */
+	SR_CONF_ANALOG_THRESHOLD_CUSTOM,
+
 	/* Update sr_key_info_config[] (hwdriver.c) upon changes! */
 
 	/*--- Fast Fourier Transform (FFT) ----------------------------------*/
