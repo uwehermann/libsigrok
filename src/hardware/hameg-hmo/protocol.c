@@ -264,12 +264,36 @@ static const char *rohde_schwarz_rto200x_scpi_dialect[] = {
 					        ":FORM REAL,32;:CALC:MATH%d:DATA?",
 };
 
-static const uint32_t devopts[] = {
+static const uint32_t devopts_hmo_rtc100x[] = {
 	SR_CONF_OSCILLOSCOPE,
 	SR_CONF_LIMIT_SAMPLES | SR_CONF_SET,
 	SR_CONF_LIMIT_FRAMES | SR_CONF_SET,
-	SR_CONF_SAMPLERATE | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_SAMPLERATE | SR_CONF_GET,
 	SR_CONF_WAVEFORM_SAMPLE_RATE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_INTERPOLATION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TIMEBASE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_NUM_HDIV | SR_CONF_GET,
+	SR_CONF_HORIZ_TRIGGERPOS | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_TRIGGER_SOURCE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_SLOPE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_PATTERN | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_HIGH_RESOLUTION | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_PEAK_DETECTION | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_WINDOW | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_FFT_FREQUENCY_START | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_STOP | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_SPAN | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_CENTER | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_RESOLUTION_BW | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_COUPLING | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_RATIO | SR_CONF_GET | SR_CONF_SET,
+};
+
+static const uint32_t devopts_rtb200x_rtm300x_rta400x[] = {
+	SR_CONF_OSCILLOSCOPE,
+	SR_CONF_LIMIT_SAMPLES | SR_CONF_SET,
+	SR_CONF_LIMIT_FRAMES | SR_CONF_SET,
+	SR_CONF_SAMPLERATE | SR_CONF_GET,
 	SR_CONF_AUTO_RECORD_LENGTH | SR_CONF_GET | SR_CONF_SET,
 	SR_CONF_INTERPOLATION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_TIMEBASE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
@@ -280,6 +304,30 @@ static const uint32_t devopts[] = {
 	SR_CONF_TRIGGER_PATTERN | SR_CONF_GET | SR_CONF_SET,
 	SR_CONF_HIGH_RESOLUTION | SR_CONF_GET | SR_CONF_SET,
 	SR_CONF_PEAK_DETECTION | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_WINDOW | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_FFT_FREQUENCY_START | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_STOP | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_SPAN | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_CENTER | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_RESOLUTION_BW | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_COUPLING | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_RATIO | SR_CONF_GET | SR_CONF_SET,
+};
+
+static const uint32_t devopts_rto200x[] = {
+	SR_CONF_OSCILLOSCOPE,
+	SR_CONF_LIMIT_SAMPLES | SR_CONF_SET,
+	SR_CONF_LIMIT_FRAMES | SR_CONF_SET,
+	SR_CONF_SAMPLERATE | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_INTERPOLATION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TIMEBASE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_NUM_HDIV | SR_CONF_GET,
+	SR_CONF_HORIZ_TRIGGERPOS | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_TRIGGER_SOURCE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_SLOPE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_PATTERN | SR_CONF_GET | SR_CONF_SET,
+/*	SR_CONF_HIGH_RESOLUTION | SR_CONF_GET | SR_CONF_SET, */ /* Not implemented yet. */
+/*	SR_CONF_PEAK_DETECTION | SR_CONF_GET | SR_CONF_SET, */ /* Not implemented yet. */
 	SR_CONF_FFT_WINDOW | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_FFT_FREQUENCY_START | SR_CONF_GET | SR_CONF_SET,
 	SR_CONF_FFT_FREQUENCY_STOP | SR_CONF_GET | SR_CONF_SET,
@@ -655,8 +703,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -705,8 +753,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -755,8 +803,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -805,8 +853,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -856,8 +904,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -905,8 +953,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_hmo_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -954,8 +1002,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rtb200x_rtm300x_rta400x,
+		.num_devopts = ARRAY_SIZE(devopts_rtb200x_rtm300x_rta400x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1004,8 +1052,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rtb200x_rtm300x_rta400x,
+		.num_devopts = ARRAY_SIZE(devopts_rtb200x_rtm300x_rta400x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1054,8 +1102,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rtb200x_rtm300x_rta400x,
+		.num_devopts = ARRAY_SIZE(devopts_rtb200x_rtm300x_rta400x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1103,8 +1151,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rtb200x_rtm300x_rta400x,
+		.num_devopts = ARRAY_SIZE(devopts_rtb200x_rtm300x_rta400x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1152,8 +1200,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rtb200x_rtm300x_rta400x,
+		.num_devopts = ARRAY_SIZE(devopts_rtb200x_rtm300x_rta400x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1203,8 +1251,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts,
-		.num_devopts = ARRAY_SIZE(devopts),
+		.devopts = &devopts_rto200x,
+		.num_devopts = ARRAY_SIZE(devopts_rto200x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
