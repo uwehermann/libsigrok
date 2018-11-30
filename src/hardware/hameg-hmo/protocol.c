@@ -86,6 +86,8 @@ static const char *hameg_scpi_dialect[] = {
 	[SCPI_CMD_SET_DIG_POD_THRESHOLD]      = ":POD%d:THR %s",
 	[SCPI_CMD_GET_DIG_POD_USER_THRESHOLD] = ":POD%d:THR:UDL%d?",
 	[SCPI_CMD_SET_DIG_POD_USER_THRESHOLD] = ":POD%d:THR:UDL%d %s",
+	[SCPI_CMD_GET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND?",
+	[SCPI_CMD_SET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND %s",
 	[SCPI_CMD_GET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR?",
 	[SCPI_CMD_SET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR:DEF \"%s\"",
 	[SCPI_CMD_GET_FFT_SAMPLE_RATE]	      = ":CALC:MATH%d:FFT:SRAT?",
@@ -170,6 +172,8 @@ static const char *rohde_schwarz_log_not_pod_scpi_dialect[] = {
 	[SCPI_CMD_SET_DIG_POD_THRESHOLD]      = ":DIG%d:TECH %s",
 	[SCPI_CMD_GET_DIG_POD_USER_THRESHOLD] = ":DIG%d:THR?",
 	[SCPI_CMD_SET_DIG_POD_USER_THRESHOLD] = ":DIG%d:THR %s",
+	[SCPI_CMD_GET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND?",
+	[SCPI_CMD_SET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND %s",
 	[SCPI_CMD_GET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR?",
 	[SCPI_CMD_SET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR:DEF \"%s\"",
 	[SCPI_CMD_GET_FFT_SAMPLE_RATE]	      = ":CALC:MATH%d:FFT:SRAT?",
@@ -251,6 +255,8 @@ static const char *rohde_schwarz_rto200x_scpi_dialect[] = {
 	[SCPI_CMD_SET_DIG_POD_THRESHOLD]      = ":BUS%d:PAR:TECH %s",
 	[SCPI_CMD_GET_DIG_POD_USER_THRESHOLD] = ":BUS%d:PAR:THR%d?",
 	[SCPI_CMD_SET_DIG_POD_USER_THRESHOLD] = ":BUS%d:PAR:THR%d %s",
+	[SCPI_CMD_GET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND?",
+	[SCPI_CMD_SET_BANDWIDTH_LIMIT]	      = ":CHAN%d:BAND %s",
 	[SCPI_CMD_GET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR?",
 	[SCPI_CMD_SET_MATH_EXPRESSION]	      = ":CALC:MATH%d:EXPR:DEF \"%s\"",
 /*	[SCPI_CMD_GET_FFT_SAMPLE_RATE] missing, as of User Manual version 12 ! */
@@ -357,12 +363,14 @@ static const uint32_t devopts_cg_analog[] = {
 	SR_CONF_VSCALE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_COUPLING | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_ANALOG_THRESHOLD_CUSTOM | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_BANDWIDTH_LIMIT | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 };
 
 static const uint32_t devopts_cg_analog_rto200x[] = {
 	SR_CONF_NUM_VDIV | SR_CONF_GET,
 	SR_CONF_VSCALE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_COUPLING | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_BANDWIDTH_LIMIT | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 };
 
 static const uint32_t devopts_cg_digital[] = {
@@ -504,6 +512,20 @@ static const char *fft_window_types_rto200x[] = {
 	"GAUS",
 	"FLAT",
 	"KAIS",
+};
+
+/* Bandwidth limits for all series except the RTO200x */
+static const char *bandwidth_limit[] = {
+	"FULL",
+	"B20",
+};
+
+/* Bandwidth limits for the RTO200x */
+static const char *bandwidth_limit_rto200x[] = {
+	"FULL",
+	"B20",
+	"B200",
+	"B800", // available only for 50 Ohm coupling when bandwidth >= 1GHz
 };
 
 /* RTC1002, HMO Compact2 and HMO1002/HMO1202 */
@@ -765,6 +787,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_hmo,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_hmo),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases_hmo_compact,
 		.num_timebases = ARRAY_SIZE(timebases_hmo_compact),
 
@@ -815,6 +840,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_hmo,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_hmo),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -864,6 +892,9 @@ static struct scope_config scope_models[] = {
 
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
+
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
 
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
@@ -916,6 +947,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -966,6 +1000,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_hmo,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_hmo),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases_hmo_compact,
 		.num_timebases = ARRAY_SIZE(timebases_hmo_compact),
 
@@ -1014,6 +1051,9 @@ static struct scope_config scope_models[] = {
 
 		.fft_window_types = &fft_window_types_hmo,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_hmo),
+
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
 
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
@@ -1065,6 +1105,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -1115,6 +1158,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -1164,6 +1210,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -1212,6 +1261,9 @@ static struct scope_config scope_models[] = {
 
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
+
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
 
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
@@ -1263,6 +1315,9 @@ static struct scope_config scope_models[] = {
 		.fft_window_types = &fft_window_types_rt,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rt),
 
+		.bandwidth_limit = &bandwidth_limit,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit),
+
 		.timebases = &timebases,
 		.num_timebases = ARRAY_SIZE(timebases),
 
@@ -1312,6 +1367,9 @@ static struct scope_config scope_models[] = {
 
 		.fft_window_types = &fft_window_types_rto200x,
 		.num_fft_window_types = ARRAY_SIZE(fft_window_types_rto200x),
+
+		.bandwidth_limit = &bandwidth_limit_rto200x,
+		.num_bandwidth_limit = ARRAY_SIZE(bandwidth_limit_rto200x),
 
 		.timebases = &timebases_rto200x,
 		.num_timebases = ARRAY_SIZE(timebases_rto200x),
@@ -1523,6 +1581,16 @@ static int analog_channel_state_get(const struct sr_dev_inst *sdi,
 					      &state->analog_channels[i].user_threshold) != SR_OK)
 				return SR_ERR;
 		}
+
+		/* Determine the bandwidth limit. */
+		g_snprintf(command, sizeof(command),
+			   (*config->scpi_dialect)[SCPI_CMD_GET_BANDWIDTH_LIMIT],
+			   i + 1);
+
+		if (scope_state_get_array_option(scpi, command,
+						 config->bandwidth_limit, config->num_bandwidth_limit,
+						 &state->analog_channels[i].bandwidth_limit) != SR_OK)
+			return SR_ERR;
 	}
 
 	return SR_OK;
