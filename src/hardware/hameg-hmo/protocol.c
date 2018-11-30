@@ -39,6 +39,11 @@ SR_PRIV void hmo_cleanup_logic_data(struct dev_context *devc);
  *
  * It supports setting a logic threshold for Logic (Pattern)
  * Trigger on digitized analog channels (custom level).
+ *
+ * It supports the Random Sampling (10x or 12.5x maximum sample
+ * rate) and the Acquisition Mode settings. Note that the Random
+ * Sampling feature might only be available on HMO2524 and HMO3000,
+ * according to the latest available User Manual version.
  */
 static const char *hameg_scpi_dialect[] = {
 	[SCPI_CMD_GET_DIG_DATA]		      = ":FORM UINT,8;:POD%d:DATA?",
@@ -50,6 +55,10 @@ static const char *hameg_scpi_dialect[] = {
 	[SCPI_CMD_GET_SAMPLE_RATE]	      = ":ACQ:SRAT?",
 	[SCPI_CMD_GET_WAVEFORM_SAMPLE_RATE]   = ":ACQ:WRAT?",
 	[SCPI_CMD_SET_WAVEFORM_SAMPLE_RATE]   = ":ACQ:WRAT %s",
+	[SCPI_CMD_GET_RANDOM_SAMPLING]	      = ":ACQ:REAL?",	/* HMO2524 and HMO3000 series only ! */
+	[SCPI_CMD_SET_RANDOM_SAMPLING]	      = ":ACQ:REAL %s",	/* HMO2524 and HMO3000 series only ! */
+	[SCPI_CMD_GET_ACQUISITION_MODE]	      = ":ACQ:MODE?",
+	[SCPI_CMD_SET_ACQUISITION_MODE]	      = ":ACQ:MODE %s",
 	[SCPI_CMD_GET_INTERPOLATION_MODE]     = ":ACQ:INT?",
 	[SCPI_CMD_SET_INTERPOLATION_MODE]     = ":ACQ:INT %s",
 	[SCPI_CMD_GET_ANALOG_DATA]	      = ":FORM:BORD %s;" \
@@ -284,12 +293,40 @@ static const char *rohde_schwarz_rto200x_scpi_dialect[] = {
 					        ":FORM REAL,32;:CALC:MATH%d:DATA?",
 };
 
-static const uint32_t devopts_hmo_rtc100x[] = {
+static const uint32_t devopts_hmo300x[] = {
 	SR_CONF_OSCILLOSCOPE,
 	SR_CONF_LIMIT_SAMPLES | SR_CONF_SET,
 	SR_CONF_LIMIT_FRAMES | SR_CONF_SET,
 	SR_CONF_SAMPLERATE | SR_CONF_GET,
 	SR_CONF_WAVEFORM_SAMPLE_RATE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_RANDOM_SAMPLING | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_ACQUISITION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_INTERPOLATION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TIMEBASE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_NUM_HDIV | SR_CONF_GET,
+	SR_CONF_HORIZ_TRIGGERPOS | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_TRIGGER_SOURCE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_SLOPE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_TRIGGER_PATTERN | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_HIGH_RESOLUTION | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_PEAK_DETECTION | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_WINDOW | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_FFT_FREQUENCY_START | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_STOP | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_SPAN | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_FREQUENCY_CENTER | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_RESOLUTION_BW | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_COUPLING | SR_CONF_GET | SR_CONF_SET,
+	SR_CONF_FFT_SPAN_RBW_RATIO | SR_CONF_GET | SR_CONF_SET,
+};
+
+static const uint32_t devopts_hmocompact_hmo1x02_rtc100x[] = {
+	SR_CONF_OSCILLOSCOPE,
+	SR_CONF_LIMIT_SAMPLES | SR_CONF_SET,
+	SR_CONF_LIMIT_FRAMES | SR_CONF_SET,
+	SR_CONF_SAMPLERATE | SR_CONF_GET,
+	SR_CONF_WAVEFORM_SAMPLE_RATE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
+	SR_CONF_ACQUISITION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_INTERPOLATION_MODE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_TIMEBASE | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 	SR_CONF_NUM_HDIV | SR_CONF_GET,
@@ -402,6 +439,18 @@ static const char *waveform_sample_rate_nosegmem[] = {
 	"AUTO",
 	"MWAV",
 	"MSAM",
+};
+
+/* Only available on the HMO2524 and HMO3000 series. */
+static const char *random_sampling[] = {
+	"AUTO",
+	"OFF",
+};
+
+/* Only available on the HMO and RTC100x series. */
+static const char *acquisition_mode[] = {
+	"RTIM",
+	"ETIM",
 };
 
 static const char *interpolation_mode[] = {
@@ -770,8 +819,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmocompact_hmo1x02_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmocompact_hmo1x02_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -781,6 +830,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate_nosegmem,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate_nosegmem),
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -823,8 +878,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmocompact_hmo1x02_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmocompact_hmo1x02_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -834,6 +889,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate_nosegmem,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate_nosegmem),
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -876,8 +937,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmocompact_hmo1x02_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmocompact_hmo1x02_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -887,6 +948,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate_nosegmem,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate_nosegmem),
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -929,8 +996,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmo300x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo300x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -940,6 +1007,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate),
+
+		.random_sampling = &random_sampling,
+		.num_random_sampling = ARRAY_SIZE(random_sampling),
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -983,8 +1056,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmocompact_hmo1x02_rtc100x,
+		.num_devopts = ARRAY_SIZE(devopts_hmocompact_hmo1x02_rtc100x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -994,6 +1067,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate_nosegmem,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate_nosegmem),
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -1035,8 +1114,8 @@ static struct scope_config scope_models[] = {
 		.analog_names = &scope_analog_channel_names,
 		.digital_names = &scope_digital_channel_names,
 
-		.devopts = &devopts_hmo_rtc100x,
-		.num_devopts = ARRAY_SIZE(devopts_hmo_rtc100x),
+		.devopts = &devopts_hmo300x,
+		.num_devopts = ARRAY_SIZE(devopts_hmo300x),
 
 		.devopts_cg_analog = &devopts_cg_analog,
 		.num_devopts_cg_analog = ARRAY_SIZE(devopts_cg_analog),
@@ -1046,6 +1125,12 @@ static struct scope_config scope_models[] = {
 
 		.waveform_sample_rate = &waveform_sample_rate,
 		.num_waveform_sample_rate = ARRAY_SIZE(waveform_sample_rate),
+
+		.random_sampling = &random_sampling,
+		.num_random_sampling = ARRAY_SIZE(random_sampling),
+
+		.acquisition_mode = &acquisition_mode,
+		.num_acquisition_mode = ARRAY_SIZE(acquisition_mode),
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -1098,6 +1183,12 @@ static struct scope_config scope_models[] = {
 
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -1152,6 +1243,12 @@ static struct scope_config scope_models[] = {
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
 
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
+
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
 
@@ -1205,6 +1302,12 @@ static struct scope_config scope_models[] = {
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
 
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
+
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
 
@@ -1257,6 +1360,12 @@ static struct scope_config scope_models[] = {
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
 
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
+
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
 
@@ -1308,6 +1417,12 @@ static struct scope_config scope_models[] = {
 
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -1362,6 +1477,12 @@ static struct scope_config scope_models[] = {
 
 		/* Waveform acquisition rate / sample rate setting not available. */
 		.num_waveform_sample_rate = 0,
+
+		/* Random Sampling not available. */
+		.num_random_sampling = 0,
+
+		/* Acquisition mode not available. */
+		.num_acquisition_mode = 0,
 
 		.interpolation_mode = &interpolation_mode,
 		.num_interpolation_mode = ARRAY_SIZE(interpolation_mode),
@@ -1884,6 +2005,26 @@ SR_PRIV int hmo_scope_state_get(const struct sr_dev_inst *sdi)
 	if ((*config->scpi_dialect)[SCPI_CMD_GET_AUTO_RECORD_LENGTH]) {
 		if (sr_scpi_get_bool(sdi->conn, (*config->scpi_dialect)[SCPI_CMD_GET_AUTO_RECORD_LENGTH],
 		    &state->auto_record_length) != SR_OK)
+			return SR_ERR;
+	}
+
+	/* The Random Sampling functionality is supported only on the HMO2524 and HMO3000 series. */
+	if (config->random_sampling && config->num_random_sampling &&
+	    (*config->scpi_dialect)[SCPI_CMD_GET_RANDOM_SAMPLING]) {
+		if (scope_state_get_array_option(sdi->conn,
+						 (*config->scpi_dialect)[SCPI_CMD_GET_RANDOM_SAMPLING],
+						 config->random_sampling, config->num_random_sampling,
+						 &state->random_sampling) != SR_OK)
+			return SR_ERR;
+	}
+
+	/* Acquisition Mode setting is supported only on the HMO and RTC100x series. */
+	if (config->acquisition_mode && config->num_acquisition_mode &&
+	    (*config->scpi_dialect)[SCPI_CMD_GET_ACQUISITION_MODE]) {
+		if (scope_state_get_array_option(sdi->conn,
+						 (*config->scpi_dialect)[SCPI_CMD_GET_ACQUISITION_MODE],
+						 config->acquisition_mode, config->num_acquisition_mode,
+						 &state->acquisition_mode) != SR_OK)
 			return SR_ERR;
 	}
 
