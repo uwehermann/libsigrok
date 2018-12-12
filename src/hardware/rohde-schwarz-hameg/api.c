@@ -338,14 +338,14 @@ static int config_get(uint32_t key, GVariant **data,
 			return SR_ERR_ARG;
 		/* Check if the oscilloscope is currently in custom threshold mode. */
 		for (i = 0; i < model->num_logic_threshold; i++) {
-			if (!strcmp("USER2", (*model->logic_threshold)[i]))
-				if (strcmp("USER2", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
+			if (!g_ascii_strcasecmp("USER2", (*model->logic_threshold)[i]))
+				if (g_ascii_strcasecmp("USER2", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
 					return SR_ERR_NA;
-			if (!strcmp("USER", (*model->logic_threshold)[i]))
-				if (strcmp("USER", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
+			if (!g_ascii_strcasecmp("USER", (*model->logic_threshold)[i]))
+				if (g_ascii_strcasecmp("USER", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
 					return SR_ERR_NA;
-			if (!strcmp("MAN", (*model->logic_threshold)[i]))
-				if (strcmp("MAN", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
+			if (!g_ascii_strcasecmp("MAN", (*model->logic_threshold)[i]))
+				if (g_ascii_strcasecmp("MAN", (*model->logic_threshold)[state->digital_pods[idx].threshold]))
 					return SR_ERR_NA;
 		}
 		*data = g_variant_new_double(state->digital_pods[idx].user_threshold);
@@ -650,7 +650,7 @@ static int config_set(uint32_t key, GVariant *data,
 		tmp_str = (char *)g_variant_get_string(data, (gsize *)&idx);
 		if (idx <= 0 || idx > MAX_TRIGGER_PATTERN_LENGTH)
 			return SR_ERR_ARG;
-		if (strncmp("RTO", sdi->model, 3)) {
+		if (g_ascii_strncasecmp("RTO", sdi->model, 3)) {
 			g_snprintf(command, sizeof(command),
 				   (*model->scpi_dialect)[SCPI_CMD_SET_TRIGGER_PATTERN],
 				   tmp_str);
@@ -845,11 +845,11 @@ static int config_set(uint32_t key, GVariant *data,
 		custom_threshold_idx = model->num_logic_threshold;
 		need_user_index = FALSE;
 		for (i = 0; i < model->num_logic_threshold; i++) {
-			if (!strcmp("USER2", (*model->logic_threshold)[i]))
+			if (!g_ascii_strcasecmp("USER2", (*model->logic_threshold)[i]))
 				need_user_index = TRUE;
-			if (!strcmp("USER2", (*model->logic_threshold)[i]) ||
-			    !strcmp("USER", (*model->logic_threshold)[i]) ||
-			    !strcmp("MAN", (*model->logic_threshold)[i])) {
+			if (!g_ascii_strcasecmp("USER2", (*model->logic_threshold)[i]) ||
+			    !g_ascii_strcasecmp("USER", (*model->logic_threshold)[i]) ||
+			    !g_ascii_strcasecmp("MAN", (*model->logic_threshold)[i])) {
 				custom_threshold_idx = i;
 				break;
 			}
@@ -861,7 +861,7 @@ static int config_set(uint32_t key, GVariant *data,
 					   (*model->scpi_dialect)[SCPI_CMD_SET_DIG_POD_USER_THRESHOLD],
 					   idx, 2, float_str); /* USER2 */
 			} else {
-				if (strncmp("RTO", sdi->model, 3)) {
+				if (g_ascii_strncasecmp("RTO", sdi->model, 3)) {
 					g_snprintf(command, sizeof(command),
 						   (*model->scpi_dialect)[SCPI_CMD_SET_DIG_POD_USER_THRESHOLD],
 						   idx, float_str);
@@ -1444,7 +1444,7 @@ static int rs_check_channels(const char *model, GSList *channels)
 	 * Apparently the above limitation has been removed from the newer
 	 * RT series.
 	 */
-	if (!strncmp("HMO", model, 3)) {
+	if (!g_ascii_strncasecmp("HMO", model, 3)) {
 		if (enabled_pod[0] && enabled_chan[2])
 			return SR_ERR;
 		if (enabled_pod[1] && enabled_chan[3])
@@ -1548,7 +1548,7 @@ static int rs_setup_channels(const struct sr_dev_inst *sdi)
 	for (i = 0; i < model->digital_pods; i++) {
 		if (state->digital_pods[i].state == pod_enabled[i])
 			continue;
-		if (strncmp("RTO", sdi->model, 3)) {
+		if (g_ascii_strncasecmp("RTO", sdi->model, 3)) {
 			g_snprintf(command, sizeof(command),
 				   (*model->scpi_dialect)[SCPI_CMD_SET_DIG_POD_STATE],
 				   i + 1, pod_enabled[i]);
