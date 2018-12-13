@@ -94,7 +94,13 @@ static struct sr_key_info sr_key_info_config[] = {
 	{SR_CONF_RLE, SR_T_BOOL, "rle",
 		"Run length encoding", NULL},
 	{SR_CONF_TRIGGER_SLOPE, SR_T_STRING, "triggerslope",
-		"Trigger slope", NULL},
+		"Edge trigger slope", NULL},
+	{SR_CONF_TRIGGER_PATTERN, SR_T_STRING, "triggerpattern",
+		"Trigger pattern", NULL},
+	{SR_CONF_HIGH_RESOLUTION, SR_T_BOOL, "highresolution",
+		"High resolution", NULL},
+	{SR_CONF_PEAK_DETECTION, SR_T_BOOL, "peakdetection",
+		"Peak detection", NULL},
 	{SR_CONF_AVERAGING, SR_T_BOOL, "averaging",
 		"Averaging", NULL},
 	{SR_CONF_AVG_SAMPLES, SR_T_UINT64, "avg_samples",
@@ -233,6 +239,13 @@ static struct sr_key_info sr_key_info_config[] = {
 		"Fast Fourier Transform Span / Resolution Bandwidth coupling", NULL},
 	{SR_CONF_FFT_SPAN_RBW_RATIO, SR_T_UINT64, "fft_span_rbw_ratio",
 		"Fast Fourier Transform Span / Resolution Bandwidth ratio", NULL},
+
+	{SR_CONF_TRIGGER_COUPLING, SR_T_STRING, "triggercoupling",
+		"Edge trigger coupling", NULL},
+	{SR_CONF_TRIGGER_LOWPASS, SR_T_BOOL, "trigger_lp_filter",
+		"Edge trigger low-pass filter", NULL},
+	{SR_CONF_TRIGGER_NOISE_REJ, SR_T_BOOL, "trigger_noise_filter",
+		"Edge trigger noise reject filter", NULL},
 
 	/* Special stuff */
 	{SR_CONF_SESSIONFILE, SR_T_STRING, "sessionfile",

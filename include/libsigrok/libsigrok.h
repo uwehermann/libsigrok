@@ -794,8 +794,17 @@ enum sr_configkey {
 	/** The device supports run-length encoding (RLE). */
 	SR_CONF_RLE,
 
-	/** The device supports setting trigger slope. */
+	/** The device supports setting the edge trigger slope. */
 	SR_CONF_TRIGGER_SLOPE,
+
+	/** The device supports setting a pattern for the logic trigger. */
+	SR_CONF_TRIGGER_PATTERN,
+
+	/** High resolution mode. */
+	SR_CONF_HIGH_RESOLUTION,
+
+	/** Peak detection. */
+	SR_CONF_PEAK_DETECTION,
 
 	/** The device supports averaging. */
 	SR_CONF_AVERAGING,
@@ -1081,6 +1090,15 @@ enum sr_configkey {
 
 	/** FFT Span / Resolution Bandwidth ratio. */
 	SR_CONF_FFT_SPAN_RBW_RATIO,
+
+	/** The device supports setting the edge trigger coupling. */
+	SR_CONF_TRIGGER_COUPLING,
+
+	/** The device supports enabling the edge trigger low-pass filter. */
+	SR_CONF_TRIGGER_LOWPASS,
+
+	/** The device supports enabling the edge trigger noise reject filter. */
+	SR_CONF_TRIGGER_NOISE_REJ,
 
 	/*--- Special stuff -------------------------------------------------*/
 
