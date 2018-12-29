@@ -345,7 +345,7 @@ static int config_set(uint32_t key, GVariant *data,
 	unsigned int tmp_uint;
 	char command[MAX_COMMAND_SIZE], command2[MAX_COMMAND_SIZE];
 	char command3[MAX_COMMAND_SIZE], command4[MAX_COMMAND_SIZE];
-	char float_str[30], *tmp_str;
+	char float_str[MAX_COMMAND_SIZE], *tmp_str;
 	struct dev_context *devc;
 	const struct scope_config *model;
 	struct scope_state *state;
