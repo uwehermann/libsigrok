@@ -654,10 +654,22 @@ noinst_HEADERS = src/libsigrok-internal.h
 
 $(builddir)/src/version.lo: $(builddir)/include/libsigrok/git-version.h
 
+# Create the git-version.h file even for non-versioned source trees.
+# To reduce dependencies and complexity in the library source code.
+if IS_GIT_VERSIONED
 GIT_HEAD != git -C $(srcdir) rev-parse --symbolic-full-name HEAD
 
 $(builddir)/include/libsigrok/git-version.h: $(srcdir)/.git/HEAD $(srcdir)/.git/$(GIT_HEAD)
 	$(AM_V_GEN)echo '#define SR_PACKAGE_VERSION_STRING_SUFFIX "-git-'`git -C "$(srcdir)" rev-parse --verify --short HEAD`'"' > $@
+else
+$(builddir)/include/libsigrok/git-version.h:
+	$(AM_V_GEN)echo '#define SR_PACKAGE_VERSION_STRING_SUFFIX ""' > $@
+endif
+
+version-clean:
+	rm -f $(builddir)/include/libsigrok/git-version.h
+
+CLEAN_EXTRA += version-clean
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libsigrok.pc

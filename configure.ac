@@ -208,6 +208,10 @@ AC_CACHE_CHECK([for bt_put_le16], [sr_cv_have_btputle16],
 AS_IF([test "x$sr_cv_have_btputle16" = xyes],
 	[AC_DEFINE([HAVE_BT_PUT_LE16], [1], [Specifies whether we have bt_put_le16().])])
 
+# Check for the availability of version control information. This is
+# a given for local development, but might be absent in releases.
+AM_CONDITIONAL([IS_GIT_VERSIONED], [test -r "${ac_abs_confdir}/.git/HEAD" && git -C "${ac_abs_confdir}" rev-parse HEAD >/dev/null])
+
 ########################
 ##  Hardware drivers  ##
 ########################
