@@ -652,11 +652,11 @@ nodist_library_include_HEADERS = \
 	include/libsigrok/version.h
 noinst_HEADERS = src/libsigrok-internal.h
 
-$(builddir)/src/version.lo: $(srcdir)/include/libsigrok/git-version.h
+$(builddir)/src/version.lo: $(builddir)/include/libsigrok/git-version.h
 
-GIT_HEAD != git rev-parse --symbolic-full-name HEAD
+GIT_HEAD != git -C $(srcdir) rev-parse --symbolic-full-name HEAD
 
-$(srcdir)/include/libsigrok/git-version.h: $(srcdir)/.git/HEAD $(srcdir)/.git/$(GIT_HEAD)
+$(builddir)/include/libsigrok/git-version.h: $(srcdir)/.git/HEAD $(srcdir)/.git/$(GIT_HEAD)
 	$(AM_V_GEN)echo '#define SR_PACKAGE_VERSION_STRING_SUFFIX "-git-'`git -C "$(srcdir)" rev-parse --verify --short HEAD`'"' > $@
 
 pkgconfigdir = $(libdir)/pkgconfig
