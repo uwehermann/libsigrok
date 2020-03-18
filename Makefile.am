@@ -25,6 +25,8 @@ GNUMAKEFLAGS = --no-print-directory
 # distutils/setuptools cause trouble on distcheck. Disable for now.
 DISTCHECK_CONFIGURE_FLAGS = --disable-python
 
+CLEAN_EXTRA =
+
 FIRMWARE_DIR = $(datadir)/sigrok-firmware
 
 local_includes = -Iinclude -I$(srcdir)/include -I$(srcdir)/src -I.
@@ -729,7 +731,6 @@ tests_main_LDADD = libsigrok.la $(SR_EXTRA_LIBS) $(TESTS_LIBS)
 BUILD_EXTRA =
 INSTALL_EXTRA =
 UNINSTALL_EXTRA =
-CLEAN_EXTRA =
 
 libsigrok-uninstall:
 	-rmdir $(DESTDIR)$(includedir)/libsigrok
