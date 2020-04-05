@@ -649,7 +649,8 @@ library_include_HEADERS = \
 	include/libsigrok/libsigrok.h \
 	include/libsigrok/proto.h
 nodist_library_include_HEADERS = \
-	include/libsigrok/version.h
+	include/libsigrok/version.h \
+	include/libsigrok/git-version.h
 noinst_HEADERS = src/libsigrok-internal.h
 
 $(builddir)/src/version.lo: $(builddir)/include/libsigrok/git-version.h
