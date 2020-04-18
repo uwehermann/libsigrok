@@ -48,7 +48,7 @@ extern SR_PRIV struct sr_dev_driver session_driver;
 /** @endcond */
 static int session_driver_initialized = 0;
 
-#if !HAVE_ZIP_DISCARD
+#ifndef HAVE_ZIP_DISCARD
 /* Replacement for zip_discard() if it isn't available. */
 /** @private */
 SR_PRIV void sr_zip_discard(struct zip *archive)

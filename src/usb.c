@@ -33,7 +33,8 @@
 
 #define LOG_PREFIX "usb"
 
-#if !HAVE_LIBUSB_OS_HANDLE
+/* On Windows we currently require a custom libusb with libusb_os_handle. */
+#ifndef _WIN32
 typedef int libusb_os_handle;
 #endif
 

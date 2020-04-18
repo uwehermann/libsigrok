@@ -212,7 +212,7 @@ SR_API char *sr_buildinfo_scpi_backends_get(void)
 	s = g_string_sized_new(200);
 
 	g_string_append_printf(s, "TCP, ");
-#if HAVE_RPC
+#ifdef HAVE_RPC
 	g_string_append_printf(s, "RPC, ");
 #endif
 #ifdef HAVE_SERIAL_COMM

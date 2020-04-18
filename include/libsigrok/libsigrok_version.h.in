@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSIGROK_VERSION_H
-#define LIBSIGROK_VERSION_H
+#ifndef LIBSIGROK_LIBSIGROK_VERSION_H
+#define LIBSIGROK_LIBSIGROK_VERSION_H
 
 /**
  * @file
@@ -37,32 +37,32 @@
  */
 
 /** The libsigrok package 'major' version number. */
-#undef SR_PACKAGE_VERSION_MAJOR
+#define SR_PACKAGE_VERSION_MAJOR @CMAKE_PROJECT_VERSION_MAJOR@
 
 /** The libsigrok package 'minor' version number. */
-#undef SR_PACKAGE_VERSION_MINOR
+#define SR_PACKAGE_VERSION_MINOR @CMAKE_PROJECT_VERSION_MINOR@
 
 /** The libsigrok package 'micro' version number. */
-#undef SR_PACKAGE_VERSION_MICRO
+#define SR_PACKAGE_VERSION_MICRO @CMAKE_PROJECT_VERSION_PATCH@
 
 /** The libsigrok package version ("major.minor.micro") as string. */
-#undef SR_PACKAGE_VERSION_STRING
+#define SR_PACKAGE_VERSION_STRING "@PROJECT_VERSION@"
 
 /*
  * Library/libtool version macros (can be used for conditional compilation).
  */
 
 /** The libsigrok libtool 'current' version number. */
-#undef SR_LIB_VERSION_CURRENT
+#define SR_LIB_VERSION_CURRENT 9
 
 /** The libsigrok libtool 'revision' version number. */
-#undef SR_LIB_VERSION_REVISION
+#define SR_LIB_VERSION_REVISION 8
 
 /** The libsigrok libtool 'age' version number. */
-#undef SR_LIB_VERSION_AGE
+#define SR_LIB_VERSION_AGE 7
 
 /** The libsigrok libtool version ("current:revision:age") as string. */
-#undef SR_LIB_VERSION_STRING
+#define SR_LIB_VERSION_STRING "9:8:7"
 
 /** @} */
 

@@ -20,7 +20,8 @@
 #ifndef LIBSIGROK_LIBSIGROK_INTERNAL_H
 #define LIBSIGROK_LIBSIGROK_INTERNAL_H
 
-#include "config.h"
+#include <config.h>
+#include <libsigrok/libsigrok_export.h>
 
 #include <glib.h>
 #ifdef HAVE_LIBHIDAPI
@@ -1392,7 +1393,7 @@ SR_PRIV struct sr_dev_inst *sr_session_prepare_sdi(const char *filename,
 
 /*--- session_file.c --------------------------------------------------------*/
 
-#if !HAVE_ZIP_DISCARD
+#ifndef HAVE_ZIP_DISCARD
 /* Replace zip_discard() if not available. */
 #define zip_discard(zip) sr_zip_discard(zip)
 SR_PRIV void sr_zip_discard(struct zip *archive);

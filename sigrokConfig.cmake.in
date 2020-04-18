@@ -1,0 +1,53 @@
+##
+## This file is part of the libsigrokdecode project.
+##
+## Copyright (C) 2020 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+set(@PROJECT_NAME@_VERSION @PROJECT_VERSION@)
+
+@PACKAGE_INIT@
+
+set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_INST_INC_DIR@")
+set_and_check(@PROJECT_NAME@_LIB_DIR "@PACKAGE_INST_LIB_DIR@")
+
+check_required_components(@PROJECT_NAME@)
+
+find_package(serialport 0.1.2)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGLIB REQUIRED IMPORTED_TARGET "glib-2.0>=2.32.0")
+pkg_check_modules(LIBZIP REQUIRED IMPORTED_TARGET "libzip>=0.10")
+pkg_check_modules(LIBGIO IMPORTED_TARGET "gio-2.0>=2.24.0")
+pkg_check_modules(LIBREVISA IMPORTED_TARGET "librevisa>=0.0.20130412")
+pkg_check_modules(LIBGPIB IMPORTED_TARGET "libgpib")
+if(WIN32)
+        pkg_check_modules(LIBUSB IMPORTED_TARGET "libusb-1.0>=1.0.20")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+        pkg_check_modules(LIBUSB IMPORTED_TARGET "libusb-1.0")
+else()
+        pkg_check_modules(LIBUSB IMPORTED_TARGET "libusb-1.0>=1.0.16")
+endif()
+pkg_check_modules(LIBFTDI IMPORTED_TARGET "libftdi1>=1.0")
+pkg_search_module(LIBHIDAPI IMPORTED_TARGET "hidapi>=0.8.0;hidapi-hidraw>=0.8.0;hidapi-libusb>=0.8.0")
+if(LIBHIDAPI_FOUND)
+        message(STATUS "  Found hidapi, version ${LIBHIDAPI_VERSION}")
+else()
+        message(STATUS "  Package 'hidapi', not found")
+endif()
+pkg_check_modules(LIBBLUEZ IMPORTED_TARGET "bluez>=4.0")
+
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake)

@@ -91,7 +91,7 @@ static const struct sr_scpi_dev_inst *scpi_devs[] = {
 #ifdef HAVE_LIBUSB_1_0
 	&scpi_usbtmc_libusb_dev,
 #endif
-#if HAVE_RPC
+#ifdef HAVE_RPC
 	&scpi_vxi_dev,
 #endif
 #ifdef HAVE_LIBREVISA

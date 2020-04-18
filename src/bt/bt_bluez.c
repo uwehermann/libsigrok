@@ -106,7 +106,7 @@
  * the header doesn't.
  */
 
-#if !defined HAVE_BT_PUT_LE16
+#ifndef HAVE_BT_PUT_LE16
 static inline void bt_put_le16(uint16_t v, uint8_t *p)
 {
 	p[0] = (v >> 0) & 0xff;
