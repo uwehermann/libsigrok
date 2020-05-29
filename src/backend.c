@@ -142,9 +142,8 @@ SR_API GSList *sr_buildinfo_libs_get(void)
 
 #ifdef HAVE_LIBSERIALPORT
 	m = g_slist_append(NULL, g_strdup("libserialport"));
-	m = g_slist_append(m, g_strdup_printf("%s/%s (rt: %s/%s)",
-		SP_PACKAGE_VERSION_STRING, SP_LIB_VERSION_STRING,
-		sp_get_package_version_string(), sp_get_lib_version_string()));
+	m = g_slist_append(m, g_strdup_printf("%s (rt: %s)",
+		SP_PACKAGE_VERSION_STRING, sp_get_package_version_string()));
 	l = g_slist_append(l, m);
 #endif
 #ifdef HAVE_LIBUSB_1_0
