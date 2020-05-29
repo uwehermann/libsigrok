@@ -245,8 +245,6 @@ public:
 	static std::shared_ptr<Context> create();
 	/** libsigrok package version. */
 	static std::string package_version();
-	/** libsigrok library version. */
-	static std::string lib_version();
 	/** Available hardware drivers, indexed by name. */
 	std::map<std::string, std::shared_ptr<Driver> > drivers();
 	/** Available input formats, indexed by name. */

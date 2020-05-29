@@ -1426,11 +1426,6 @@ SR_API int sr_package_version_minor_get(void);
 SR_API int sr_package_version_micro_get(void);
 SR_API const char *sr_package_version_string_get(void);
 
-SR_API int sr_lib_version_current_get(void);
-SR_API int sr_lib_version_revision_get(void);
-SR_API int sr_lib_version_age_get(void);
-SR_API const char *sr_lib_version_string_get(void);
-
 /*--- error.c ---------------------------------------------------------------*/
 
 SR_API const char *sr_strerror(int error_code);

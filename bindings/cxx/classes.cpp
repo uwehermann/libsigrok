@@ -152,11 +152,6 @@ string Context::package_version()
 	return sr_package_version_string_get();
 }
 
-string Context::lib_version()
-{
-	return sr_lib_version_string_get();
-}
-
 map<string, shared_ptr<Driver>> Context::drivers()
 {
 	map<string, shared_ptr<Driver>> result;

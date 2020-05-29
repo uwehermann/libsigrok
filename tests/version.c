@@ -43,23 +43,13 @@ START_TEST(test_version_numbers)
 	ver = sr_package_version_micro_get();
 	fail_unless(ver == SR_PACKAGE_VERSION_MICRO);
 	fail_unless(ver >= 0 && ver <= 20);
-
-	ver = sr_lib_version_current_get();
-	fail_unless(ver == SR_LIB_VERSION_CURRENT);
-	fail_unless(ver >= 0 && ver <= 20);
-	ver = sr_lib_version_revision_get();
-	fail_unless(ver == SR_LIB_VERSION_REVISION);
-	fail_unless(ver >= 0 && ver <= 20);
-	ver = sr_lib_version_age_get();
-	fail_unless(ver == SR_LIB_VERSION_AGE);
-	fail_unless(ver >= 0 && ver <= 20);
 }
 END_TEST
 
 /*
  * Check the version number API calls and macros.
  *
- * The string representations of the package/lib version must neither be
+ * The string representation of the package version must neither be
  * NULL nor empty, and the length shall be within an expected range.
  *
  * The lower limit assumes:
@@ -84,10 +74,6 @@ START_TEST(test_version_strings)
 	const size_t len_max = 2 + 1 + 2 + 1 + 2 + 5 + 12;
 
 	str = sr_package_version_string_get();
-	fail_unless(str != NULL);
-	fail_unless(strlen(str) >= len_min);
-	fail_unless(strlen(str) <= len_max);
-	str = sr_lib_version_string_get();
 	fail_unless(str != NULL);
 	fail_unless(strlen(str) >= len_min);
 	fail_unless(strlen(str) <= len_max);

@@ -113,8 +113,6 @@ typedef std::map<const sigrok::ConfigKey *, Glib::VariantBase>
 
 %attributestring(sigrok::Context,
     std::string, package_version, package_version);
-%attributestring(sigrok::Context,
-    std::string, lib_version, lib_version);
 
 %attribute(sigrok::Context,
     const sigrok::LogLevel *, log_level, log_level, set_log_level);

@@ -242,8 +242,7 @@ static void print_versions(void)
 	char *str;
 	const char *lib, *version;
 
-	sr_dbg("libsigrok %s/%s.",
-		sr_package_version_string_get(), sr_lib_version_string_get());
+	sr_dbg("libsigrok %s.", sr_package_version_string_get());
 
 	s = g_string_sized_new(200);
 	g_string_append(s, "Libs: ");
